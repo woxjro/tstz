@@ -4,6 +4,7 @@ use std::path::Path;
 use swc_common::{sync::Lrc, SourceMap};
 use swc_ecma_ast::ModuleItem;
 use swc_ecma_parser::{lexer::Lexer, Parser, StringInput, Syntax};
+use tstz::typescript::get_value;
 
 fn main() {
     let cm: Lrc<SourceMap> = Default::default();
@@ -23,10 +24,16 @@ fn main() {
 
     let module = parser.parse_module().unwrap();
 
+    // let mut operations = vec![];
+    let mut type_env = vec![];
+
     for stmt in module.body {
         if let ModuleItem::Stmt(swc_ecma_ast::Stmt::Decl(swc_ecma_ast::Decl::Fn(fn_decl))) = stmt {
             if fn_decl.ident.sym == "smartContract" {
-                dbg!(fn_decl);
+                for param in fn_decl.function.params.iter() {
+                    type_env.push(get_value(param.pat.to_owned().expect_ident()));
+                }
+                dbg!(&type_env);
             }
         }
     }

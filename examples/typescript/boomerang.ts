@@ -83,30 +83,30 @@ def smart_contract(storage: Unit, param: Unit) -> Pair[List[Operation], Unit]:
 
 // Convert the above Python code to TypeScript
 type mutez = number;
-type addr = string;
+type address = string;
 
 function getAmount(): mutez {
   const DUMMY_AMOUNT: mutez = 5000;
   return DUMMY_AMOUNT;
 }
 
-function makeList(): Operation[] {
+function makeList<T>(): T[] {
   return [];
 }
 
-function append(operations: Operation[], operation: Operation): Operation[] {
-  operations.push(operation);
-  return operations;
+function append<T>(list: T[], elem: T): T[] {
+  list.push(elem);
+  return list;
 }
 
-function getSource(): addr {
-  const DUMMY_SOURCE: addr = "tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx";
+function getSource(): address {
+  const DUMMY_SOURCE: address = "tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx";
   return DUMMY_SOURCE;
 }
 
 type Contract<T> = {};
 
-function getContract(address: addr): Contract<Unit> | null {
+function getContract<T>(address: address): Contract<T> | null {
   return {};
 }
 
@@ -117,10 +117,10 @@ function assertSome<T>(value: T | null): T {
   return value;
 }
 
-function transferTokens(
-  param: Unit,
+function transferTokens<T>(
+  param: T,
   amount: mutez,
-  contract: Contract<Unit>
+  contract: Contract<T>
 ): Operation {
   return {};
 }
@@ -140,7 +140,7 @@ class Pair<T, U> {
 function smartContract(storage: Unit, param: Unit): Pair<Operation[], Unit> {
   const amount: mutez = getAmount();
   const nil: Operation[] = makeList();
-  const address: addr = getSource();
+  const address: address = getSource();
   const someContract: Contract<Unit> | null = getContract(address);
   const contract: Contract<Unit> = assertSome(someContract);
   const operation: Operation = transferTokens(param, amount, contract);
