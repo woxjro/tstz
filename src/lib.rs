@@ -326,11 +326,9 @@ pub mod typescript {
         let ty = *type_ann.unwrap();
         let ty_sym = ty
             .type_ann
-            .ts_type_ref()
-            .unwrap()
+            .expect_ts_type_ref()
             .type_name
-            .ident()
-            .unwrap()
+            .expect_ident()
             .sym
             .to_string();
         let ty = if ty_sym == AnnotationToken::Mutez.to_string() {
