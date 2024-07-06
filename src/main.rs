@@ -45,8 +45,6 @@ fn main() {
             }
         }
     }
-    dbg!(&type_env);
-    dbg!(&operations);
 
     let storage = type_env
         .iter()
@@ -97,7 +95,6 @@ fn process_stmt(
                 init,
                 definite: _,
             } = decl;
-            dbg!(&init);
             let value = get_value(name.to_owned().expect_ident());
             if let Some(expr) = init {
                 let call_expr = match &**expr {
@@ -234,8 +231,6 @@ fn process_stmt(
                     }
                 }
             }
-
-            dbg!(value);
         }
         Stmt::Return(return_stms) => {
             let sym = return_stms.arg.unwrap().expect_ident().sym.to_string();
