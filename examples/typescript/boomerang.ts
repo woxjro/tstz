@@ -106,11 +106,11 @@ function getSource(): address {
 
 type Contract<T> = {};
 
-function getContract<T>(address: address): Contract<T> | null {
+function getContract<T>(address: address): Option<Contract<T>> {
   return {};
 }
 
-function assertSome<T>(value: T | null): T {
+function assertSome<T>(value: Option<T>): T {
   if (value === null) {
     throw new Error("Expected Some but got None");
   }
@@ -137,11 +137,14 @@ class Pair<T, U> {
   constructor(public first: T, public second: U) {}
 }
 
+// Option type that is like Rust's Option type in TypeScript
+type Option<T> = T | null;
+
 function smartContract(storage: Unit, param: Unit): Pair<Operation[], Unit> {
   const amount: mutez = getAmount();
   const nil: Operation[] = makeList();
   const address: address = getSource();
-  const someContract: Contract<Unit> | null = getContract(address);
+  const someContract: Option<Contract<Unit>> = getContract(address);
   const contract: Contract<Unit> = assertSome(someContract);
   const operation: Operation = transferTokens(param, amount, contract);
   const operations: Operation[] = append(nil, operation);

@@ -2,7 +2,7 @@ extern crate swc_common;
 extern crate swc_ecma_parser;
 use std::path::Path;
 use swc_common::{sync::Lrc, SourceMap};
-use swc_ecma_ast::ModuleItem;
+use swc_ecma_ast::{Decl, ModuleItem, Stmt, VarDecl, VarDeclKind, VarDeclarator};
 use swc_ecma_parser::{lexer::Lexer, Parser, StringInput, Syntax};
 use tstz::typescript::get_value;
 
@@ -33,8 +33,42 @@ fn main() {
                 for param in fn_decl.function.params.iter() {
                     type_env.push(get_value(param.pat.to_owned().expect_ident()));
                 }
+
                 dbg!(&type_env);
+                for stmt in fn_decl.function.body.unwrap().stmts {
+                    process_stmt(stmt);
+                }
             }
+        }
+    }
+}
+
+fn process_stmt(stmt: swc_ecma_ast::Stmt) {
+    match stmt {
+        Stmt::Decl(Decl::Var(var_decl)) => {
+            let VarDecl {
+                span: _,
+                kind,
+                declare: _,
+                decls,
+            } = *var_decl;
+
+            assert_eq!(kind, VarDeclKind::Const);
+            assert_eq!(decls.len(), 1);
+            let decl = &decls[0];
+            let VarDeclarator {
+                span: _,
+                name,
+                init,
+                definite: _,
+            } = decl;
+
+            let value = get_value(name.to_owned().expect_ident());
+            dbg!(value);
+        }
+        Stmt::Return(_) => {}
+        _ => {
+            unreachable!("unexpected statement: {:?}", stmt);
         }
     }
 }
