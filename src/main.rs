@@ -2,9 +2,14 @@ extern crate swc_common;
 extern crate swc_ecma_parser;
 use std::path::Path;
 use swc_common::{sync::Lrc, SourceMap};
-use swc_ecma_ast::{Decl, ModuleItem, Stmt, VarDecl, VarDeclKind, VarDeclarator};
+use swc_ecma_ast::{
+    CallExpr, Callee, Decl, Expr, ModuleItem, Stmt, VarDecl, VarDeclKind, VarDeclarator,
+};
 use swc_ecma_parser::{lexer::Lexer, Parser, StringInput, Syntax};
-use tstz::typescript::get_value;
+use tstz::{
+    mlir::{Operation, OperationKind, Value},
+    typescript::get_value,
+};
 
 fn main() {
     let cm: Lrc<SourceMap> = Default::default();
@@ -24,7 +29,7 @@ fn main() {
 
     let module = parser.parse_module().unwrap();
 
-    // let mut operations = vec![];
+    let mut operations = vec![];
     let mut type_env = vec![];
 
     for stmt in module.body {
@@ -34,16 +39,21 @@ fn main() {
                     type_env.push(get_value(param.pat.to_owned().expect_ident()));
                 }
 
-                dbg!(&type_env);
                 for stmt in fn_decl.function.body.unwrap().stmts {
-                    process_stmt(stmt);
+                    process_stmt(stmt, &mut type_env, &mut operations);
                 }
             }
         }
     }
+    dbg!(&type_env);
+    dbg!(&operations);
 }
 
-fn process_stmt(stmt: swc_ecma_ast::Stmt) {
+fn process_stmt(
+    stmt: swc_ecma_ast::Stmt,
+    type_env: &mut Vec<Value>,
+    operations: &mut Vec<Operation>,
+) {
     match stmt {
         Stmt::Decl(Decl::Var(var_decl)) => {
             let VarDecl {
@@ -62,8 +72,144 @@ fn process_stmt(stmt: swc_ecma_ast::Stmt) {
                 init,
                 definite: _,
             } = decl;
-
+            dbg!(&init);
             let value = get_value(name.to_owned().expect_ident());
+            if let Some(expr) = init {
+                let call_expr = match &**expr {
+                    Expr::Call(call_expr) => call_expr,
+                    _ => unreachable!(),
+                };
+                let CallExpr {
+                    span: _,
+                    callee,
+                    args,
+                    type_args: _,
+                } = call_expr;
+
+                if let Callee::Expr(callee_expr) = callee {
+                    let callee_ident = match &**callee_expr {
+                        Expr::Ident(ident) => ident,
+                        _ => unreachable!(),
+                    };
+                    let name = callee_ident.sym.to_string();
+
+                    if name == "getAmount" {
+                        operations.push(Operation {
+                            kind: OperationKind::GetAmount,
+                            args: vec![],
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else if name == "makeList" {
+                        operations.push(Operation {
+                            kind: OperationKind::MakeList,
+                            args: vec![],
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else if name == "getSource" {
+                        operations.push(Operation {
+                            kind: OperationKind::GetSource,
+                            args: vec![],
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else if name == "getContract" {
+                        let args = args
+                            .iter()
+                            .map(|arg| {
+                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                                type_env
+                                    .iter()
+                                    .find(|v| v.id == format!("%{}", sym))
+                                    .unwrap()
+                                    .to_owned()
+                            })
+                            .collect::<Vec<_>>();
+                        operations.push(Operation {
+                            kind: OperationKind::GetContract,
+                            args,
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else if name == "assertSome" {
+                        let args = args
+                            .iter()
+                            .map(|arg| {
+                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                                type_env
+                                    .iter()
+                                    .find(|v| v.id == format!("%{}", sym))
+                                    .unwrap()
+                                    .to_owned()
+                            })
+                            .collect::<Vec<_>>();
+                        operations.push(Operation {
+                            kind: OperationKind::AssertSome,
+                            args,
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else if name == "transferTokens" {
+                        let args = args
+                            .iter()
+                            .map(|arg| {
+                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                                type_env
+                                    .iter()
+                                    .find(|v| v.id == format!("%{}", sym))
+                                    .unwrap()
+                                    .to_owned()
+                            })
+                            .collect::<Vec<_>>();
+                        operations.push(Operation {
+                            kind: OperationKind::TransferTokens,
+                            args,
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else if name == "append" {
+                        let args = args
+                            .iter()
+                            .map(|arg| {
+                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                                type_env
+                                    .iter()
+                                    .find(|v| v.id == format!("%{}", sym))
+                                    .unwrap()
+                                    .to_owned()
+                            })
+                            .collect::<Vec<_>>();
+                        operations.push(Operation {
+                            kind: OperationKind::Append,
+                            args,
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else if name == "makePair" {
+                        let args = args
+                            .iter()
+                            .map(|arg| {
+                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                                type_env
+                                    .iter()
+                                    .find(|v| v.id == format!("%{}", sym))
+                                    .unwrap()
+                                    .to_owned()
+                            })
+                            .collect::<Vec<_>>();
+                        operations.push(Operation {
+                            kind: OperationKind::MakePair,
+                            args,
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else {
+                        unreachable!("unexpected function: {:?}", name);
+                    }
+                }
+            }
+
             dbg!(value);
         }
         Stmt::Return(_) => {}

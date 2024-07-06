@@ -137,7 +137,6 @@ class Pair<T, U> {
   constructor(public first: T, public second: U) {}
 }
 
-// Option type that is like Rust's Option type in TypeScript
 type Option<T> = T | null;
 
 function smartContract(storage: Unit, param: Unit): Pair<Operation[], Unit> {

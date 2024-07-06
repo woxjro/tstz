@@ -327,7 +327,7 @@ pub mod typescript {
         let ty = get_mlir_type(*type_ann.unwrap().type_ann);
 
         Value {
-            id: bident.id.sym.to_string(),
+            id: format!("%{}", bident.id.sym),
             ty,
         }
     }
