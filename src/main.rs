@@ -7,7 +7,7 @@ use swc_ecma_ast::{
 };
 use swc_ecma_parser::{lexer::Lexer, Parser, StringInput, Syntax};
 use tstz::{
-    mlir::{Operation, OperationKind, Value},
+    mlir::{Operation, OperationKind, Type, Value},
     typescript::get_value,
 };
 
@@ -47,6 +47,31 @@ fn main() {
     }
     dbg!(&type_env);
     dbg!(&operations);
+
+    let storage = type_env
+        .iter()
+        .find(|value| value.id == "%storage")
+        .unwrap();
+    let param = type_env.iter().find(|value| value.id == "%param").unwrap();
+    println!("module {{");
+    println!(
+        "  func.func @smart_contract({}: {}, {}: {}) -> {} {{",
+        param.id,
+        param.ty,
+        storage.id,
+        storage.ty,
+        Type::Pair {
+            fst: Box::new(Type::List {
+                elem: Box::new(Type::Operation)
+            }),
+            snd: Box::new(storage.ty.to_owned())
+        }
+    );
+    for op in operations {
+        println!("    {}", op);
+    }
+    println!("  }}");
+    println!("}}");
 }
 
 fn process_stmt(
@@ -212,7 +237,19 @@ fn process_stmt(
 
             dbg!(value);
         }
-        Stmt::Return(_) => {}
+        Stmt::Return(return_stms) => {
+            let sym = return_stms.arg.unwrap().expect_ident().sym.to_string();
+            let args = type_env
+                .iter()
+                .filter(|v| v.id == format!("%{}", sym))
+                .map(|v| v.to_owned())
+                .collect::<Vec<_>>();
+            operations.push(Operation {
+                kind: OperationKind::Return,
+                args,
+                results: vec![],
+            });
+        }
         _ => {
             unreachable!("unexpected statement: {:?}", stmt);
         }
