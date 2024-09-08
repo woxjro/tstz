@@ -6,5 +6,5 @@ $ npx ts-node ./examples/typescript/boomerang.ts
 ```
 
 ```sh
-$ cargo run
+$ cargo run -- --file ./examples/typescript/boomerang.ts
 ```

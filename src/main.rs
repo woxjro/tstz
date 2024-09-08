@@ -1,6 +1,7 @@
 extern crate swc_common;
 extern crate swc_ecma_parser;
-use std::path::Path;
+use clap::Parser as CParser;
+use std::path::{Path, PathBuf};
 use swc_common::{sync::Lrc, SourceMap};
 use swc_ecma_ast::{
     CallExpr, Callee, Decl, Expr, ModuleItem, Stmt, VarDecl, VarDeclKind, VarDeclarator,
@@ -11,10 +12,18 @@ use tstz::{
     typescript::get_value,
 };
 
+#[derive(CParser, Debug)]
+#[command(name = "FilePath")]
+struct Args {
+    #[arg(short, long, value_name = "FILE", required = true)]
+    file: PathBuf,
+}
+
 fn main() {
     let cm: Lrc<SourceMap> = Default::default();
+    let args = Args::parse();
     let fm = cm
-        .load_file(Path::new("./examples/typescript/boomerang.ts"))
+        .load_file(Path::new(&args.file))
         .expect("failed to load test.js");
     let lexer = Lexer::new(
         // We want to parse ecmascript
