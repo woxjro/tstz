@@ -15,15 +15,17 @@ use tstz::{
 #[derive(CParser, Debug)]
 #[command(name = "FilePath")]
 struct Args {
-    #[arg(short, long, value_name = "FILE", required = true)]
-    file: PathBuf,
+    #[arg(short, long, value_name = "INPUT", required = true)]
+    input: PathBuf,
+    #[arg(short, long, value_name = "OUTPUT", required = false)]
+    output: Option<PathBuf>,
 }
 
 fn main() {
     let cm: Lrc<SourceMap> = Default::default();
     let args = Args::parse();
     let fm = cm
-        .load_file(Path::new(&args.file))
+        .load_file(Path::new(&args.input))
         .expect("failed to load test.js");
     let lexer = Lexer::new(
         // We want to parse ecmascript
@@ -60,9 +62,12 @@ fn main() {
         .find(|value| value.id == "%storage")
         .unwrap();
     let param = type_env.iter().find(|value| value.id == "%param").unwrap();
-    println!("module {{");
-    println!(
-        "  func.func @smart_contract({}: {}, {}: {}) -> {} {{",
+
+    let mut output = String::new();
+
+    output.push_str("module {\n");
+    output.push_str(&format!(
+        "  func.func @smart_contract({}: {}, {}: {}) -> {} {{\n",
         param.id,
         param.ty,
         storage.id,
@@ -73,12 +78,18 @@ fn main() {
             }),
             snd: Box::new(storage.ty.to_owned())
         }
-    );
+    ));
     for op in operations {
-        println!("    {}", op);
+        output.push_str(&format!("    {}\n", op));
     }
-    println!("  }}");
-    println!("}}");
+    output.push_str("  }\n");
+    output.push('}');
+
+    if let Some(output_path) = args.output {
+        std::fs::write(output_path, output).expect("failed to write output");
+    } else {
+        println!("{}", output);
+    }
 }
 
 fn process_stmt(
