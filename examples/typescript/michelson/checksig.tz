@@ -1,0 +1,17 @@
+parameter (pair signature string);
+storage (pair address key);
+code
+  {
+    DUP; DUP; DUP;
+    DIP { CAR; UNPAIR; DIP { PACK } }; CDDR;
+    CHECK_SIGNATURE; ASSERT;
+
+    UNPAIR; CDR; SWAP; CAR;
+    CONTRACT string; ASSERT_SOME; SWAP;
+    PUSH mutez 1; SWAP;
+    TRANSFER_TOKENS;
+
+    NIL operation; SWAP;
+    CONS; DIP { CDR };
+    PAIR
+  }
