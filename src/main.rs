@@ -246,6 +246,42 @@ fn process_stmt(
                             results: vec![value.to_owned()],
                         });
                         type_env.push(value.to_owned());
+                    } else if name == "getBytes" {
+                        let args = args
+                            .iter()
+                            .map(|arg| {
+                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                                type_env
+                                    .iter()
+                                    .find(|v| v.id == format!("%{}", sym))
+                                    .unwrap()
+                                    .to_owned()
+                            })
+                            .collect::<Vec<_>>();
+                        operations.push(Operation {
+                            kind: OperationKind::GetBytes,
+                            args,
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else if name == "sha256" {
+                        let args = args
+                            .iter()
+                            .map(|arg| {
+                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                                type_env
+                                    .iter()
+                                    .find(|v| v.id == format!("%{}", sym))
+                                    .unwrap()
+                                    .to_owned()
+                            })
+                            .collect::<Vec<_>>();
+                        operations.push(Operation {
+                            kind: OperationKind::Sha256,
+                            args,
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
                     } else {
                         unreachable!("unexpected function: {:?}", name);
                     }

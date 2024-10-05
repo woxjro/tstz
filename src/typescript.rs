@@ -2,27 +2,33 @@ use crate::mlir::{Type, Value};
 use swc_ecma_ast::{BindingIdent, TsType};
 #[derive(Debug, Clone, PartialEq)]
 pub enum AnnotationToken {
-    Mutez,
-    Unit,
     Address,
+    Bytes,
     Contract,
+    Int,
+    List,
+    Mutez,
+    Nat,
     Operation,
     Option,
-    List,
     Pair,
+    Unit,
 }
 
 impl std::fmt::Display for AnnotationToken {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Mutez => write!(f, "mutez"),
-            Self::Unit => write!(f, "Unit"),
             Self::Address => write!(f, "address"),
+            Self::Bytes => write!(f, "bytes"),
             Self::Contract => write!(f, "Contract"),
+            Self::Int => write!(f, "int"),
+            Self::List => todo!(),
+            Self::Mutez => write!(f, "mutez"),
+            Self::Nat => write!(f, "nat"),
             Self::Operation => write!(f, "Operation"),
             Self::Option => write!(f, "Option"),
-            Self::List => todo!(),
             Self::Pair => write!(f, "Pair"),
+            Self::Unit => write!(f, "Unit"),
         }
     }
 }
@@ -48,6 +54,12 @@ pub fn get_mlir_type(ty_ann: TsType) -> Type {
                 Type::Unit
             } else if ty_sym == AnnotationToken::Address.to_string() {
                 Type::Address
+            } else if ty_sym == AnnotationToken::Bytes.to_string() {
+                Type::Bytes
+            } else if ty_sym == AnnotationToken::Int.to_string() {
+                Type::Int
+            } else if ty_sym == AnnotationToken::Nat.to_string() {
+                Type::Nat
             } else if ty_sym == AnnotationToken::Operation.to_string() {
                 Type::Operation
             } else if ty_sym == AnnotationToken::Option.to_string() {
