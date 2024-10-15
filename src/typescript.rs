@@ -3,15 +3,19 @@ use swc_ecma_ast::{BindingIdent, TsType};
 #[derive(Debug, Clone, PartialEq)]
 pub enum AnnotationToken {
     Address,
+    Bool,
     Bytes,
     Contract,
     Int,
+    Key,
     List,
     Mutez,
     Nat,
     Operation,
     Option,
     Pair,
+    Signature,
+    String,
     Unit,
 }
 
@@ -19,15 +23,19 @@ impl std::fmt::Display for AnnotationToken {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Address => write!(f, "address"),
+            Self::Bool => write!(f, "bool"),
             Self::Bytes => write!(f, "bytes"),
             Self::Contract => write!(f, "Contract"),
             Self::Int => write!(f, "int"),
+            Self::Key => write!(f, "key"),
             Self::List => todo!(),
             Self::Mutez => write!(f, "mutez"),
             Self::Nat => write!(f, "nat"),
             Self::Operation => write!(f, "Operation"),
             Self::Option => write!(f, "Option"),
             Self::Pair => write!(f, "Pair"),
+            Self::Signature => write!(f, "signature"),
+            Self::String => write!(f, "string"),
             Self::Unit => write!(f, "Unit"),
         }
     }
@@ -56,6 +64,14 @@ pub fn get_mlir_type(ty_ann: TsType) -> Type {
                 Type::Address
             } else if ty_sym == AnnotationToken::Bytes.to_string() {
                 Type::Bytes
+            } else if ty_sym == AnnotationToken::Bool.to_string() {
+                Type::Bool
+            } else if ty_sym == AnnotationToken::Key.to_string() {
+                Type::Key
+            } else if ty_sym == AnnotationToken::Signature.to_string() {
+                Type::Signature
+            } else if ty_sym == AnnotationToken::String.to_string() {
+                Type::String
             } else if ty_sym == AnnotationToken::Int.to_string() {
                 Type::Int
             } else if ty_sym == AnnotationToken::Nat.to_string() {
