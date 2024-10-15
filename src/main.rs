@@ -282,6 +282,95 @@ fn process_stmt(
                             results: vec![value.to_owned()],
                         });
                         type_env.push(value.to_owned());
+                    } else if name == "getFst" {
+                        let args = args
+                            .iter()
+                            .map(|arg| {
+                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                                type_env
+                                    .iter()
+                                    .find(|v| v.id == format!("%{}", sym))
+                                    .unwrap()
+                                    .to_owned()
+                            })
+                            .collect::<Vec<_>>();
+                        operations.push(Operation {
+                            kind: OperationKind::GetFst,
+                            args,
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else if name == "getSnd" {
+                        let args = args
+                            .iter()
+                            .map(|arg| {
+                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                                type_env
+                                    .iter()
+                                    .find(|v| v.id == format!("%{}", sym))
+                                    .unwrap()
+                                    .to_owned()
+                            })
+                            .collect::<Vec<_>>();
+                        operations.push(Operation {
+                            kind: OperationKind::GetSnd,
+                            args,
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else if name == "checkSignature" {
+                        let args = args
+                            .iter()
+                            .map(|arg| {
+                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                                type_env
+                                    .iter()
+                                    .find(|v| v.id == format!("%{}", sym))
+                                    .unwrap()
+                                    .to_owned()
+                            })
+                            .collect::<Vec<_>>();
+                        operations.push(Operation {
+                            kind: OperationKind::CheckSignature,
+                            args,
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else if name == "pack" {
+                        let args = args
+                            .iter()
+                            .map(|arg| {
+                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                                type_env
+                                    .iter()
+                                    .find(|v| v.id == format!("%{}", sym))
+                                    .unwrap()
+                                    .to_owned()
+                            })
+                            .collect::<Vec<_>>();
+                        operations.push(Operation {
+                            kind: OperationKind::Pack,
+                            args,
+                            results: vec![value.to_owned()],
+                        });
+                        type_env.push(value.to_owned());
+                    } else if name == "assert" {
+                        let args = args
+                            .iter()
+                            .map(|arg| {
+                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                                type_env
+                                    .iter()
+                                    .find(|v| v.id == format!("%{}", sym))
+                                    .unwrap()
+                                    .to_owned()
+                            })
+                            .collect::<Vec<_>>();
+                        operations.push(Operation {
+                            kind: OperationKind::Assert,
+                            args,
+                            results: vec![],
+                        });
                     } else {
                         unreachable!("unexpected function: {:?}", name);
                     }
@@ -300,6 +389,48 @@ fn process_stmt(
                 args,
                 results: vec![],
             });
+        }
+        Stmt::Expr(expr_stmt) => {
+            let expr = expr_stmt.expr;
+            let call_expr = match &*expr {
+                Expr::Call(call_expr) => call_expr,
+                _ => unreachable!(),
+            };
+            let CallExpr {
+                span: _,
+                callee,
+                args,
+                type_args: _,
+            } = call_expr;
+
+            if let Callee::Expr(callee_expr) = callee {
+                let callee_ident = match &**callee_expr {
+                    Expr::Ident(ident) => ident,
+                    _ => unreachable!(),
+                };
+                let name = callee_ident.sym.to_string();
+
+                if name == "assert" {
+                    let args = args
+                        .iter()
+                        .map(|arg| {
+                            let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                            type_env
+                                .iter()
+                                .find(|v| v.id == format!("%{}", sym))
+                                .unwrap()
+                                .to_owned()
+                        })
+                        .collect::<Vec<_>>();
+                    operations.push(Operation {
+                        kind: OperationKind::Assert,
+                        args,
+                        results: vec![],
+                    });
+                } else {
+                    todo!("unexpected function: {:?}", name);
+                }
+            }
         }
         _ => {
             unreachable!("unexpected statement: {:?}", stmt);

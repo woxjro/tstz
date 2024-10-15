@@ -25,17 +25,22 @@ pub enum Type {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum OperationKind {
-    MakePair,
-    MakeList,
+    Append,
+    Assert,
+    AssertSome,
+    CheckSignature,
     GetAmount,
     GetBytes,
-    GetSource,
     GetContract,
-    AssertSome,
+    GetFst,
+    GetSnd,
+    GetSource,
+    MakeList,
+    MakePair,
+    Pack,
+    Return,
     Sha256,
     TransferTokens,
-    Append,
-    Return,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -214,7 +219,66 @@ impl std::fmt::Display for Operation {
                     result.ty
                 )
             }
+            OperationKind::Pack => {
+                assert_eq!(self.args.len(), 1);
+                assert_eq!(self.results.len(), 1);
+                let result = &self.results[0];
+                write!(
+                    f,
+                    "{} = \"michelson.pack\"({}): ({}) -> {}",
+                    result.id, self.args[0].id, self.args[0].ty, result.ty
+                )
+            }
+            OperationKind::GetFst => {
+                assert_eq!(self.args.len(), 1);
+                assert_eq!(self.results.len(), 1);
 
+                let result = &self.results[0];
+                write!(
+                    f,
+                    "{} = \"michelson.get_fst\"({}): ({}) -> {}",
+                    result.id, self.args[0].id, self.args[0].ty, result.ty
+                )
+            }
+            OperationKind::GetSnd => {
+                assert_eq!(self.args.len(), 1);
+                assert_eq!(self.results.len(), 1);
+
+                let result = &self.results[0];
+                write!(
+                    f,
+                    "{} = \"michelson.get_snd\"({}): ({}) -> {}",
+                    result.id, self.args[0].id, self.args[0].ty, result.ty
+                )
+            }
+            OperationKind::CheckSignature => {
+                assert_eq!(self.args.len(), 3);
+                assert_eq!(self.results.len(), 1);
+
+                let result = &self.results[0];
+                write!(
+                    f,
+                    "{} = \"michelson.check_signature\"({}, {}, {}): ({}, {}, {}) -> {}",
+                    result.id,
+                    self.args[0].id,
+                    self.args[1].id,
+                    self.args[2].id,
+                    self.args[0].ty,
+                    self.args[1].ty,
+                    self.args[2].ty,
+                    result.ty
+                )
+            }
+            OperationKind::Assert => {
+                assert_eq!(self.args.len(), 1);
+                assert_eq!(self.results.len(), 0);
+
+                write!(
+                    f,
+                    "\"michelson.assert\"({}): ({}) -> ()",
+                    self.args[0].id, self.args[0].ty
+                )
+            }
             OperationKind::Return => {
                 assert_eq!(self.results.len(), 0);
                 assert_eq!(self.args.len(), 1);

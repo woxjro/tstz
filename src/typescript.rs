@@ -35,7 +35,7 @@ impl std::fmt::Display for AnnotationToken {
             Self::Option => write!(f, "Option"),
             Self::Pair => write!(f, "Pair"),
             Self::Signature => write!(f, "signature"),
-            Self::String => write!(f, "string"),
+            Self::String => write!(f, "String"),
             Self::Unit => write!(f, "Unit"),
         }
     }
