@@ -1,8 +1,12 @@
 export type address = string;
+export type bool = boolean;
 export type bytes = string;
 export type int = number;
+export type key = string;
 export type mutez = number;
 export type nat = number;
+export type signature = string;
+// export type string = string;
 
 export function getAmount(): mutez {
   const DUMMY_AMOUNT: mutez = 5000;
@@ -71,7 +75,38 @@ export function makePair<T, U>(first: T, second: U): Pair<T, U> {
 }
 
 export class Pair<T, U> {
-  constructor(public first: T, public second: U) {}
+  constructor(
+    public first: T,
+    public second: U
+  ) {}
 }
 
 export type Option<T> = T | null;
+
+// The type of value should be packable to bytes
+export function pack(value: string): bytes {
+  return value;
+}
+
+export function getFst<T, U>(pair: Pair<T, U>): T {
+  return pair.first;
+}
+
+export function getSnd<T, U>(pair: Pair<T, U>): U {
+  return pair.second;
+}
+
+export function assert(condition: bool) {
+  if (!condition) {
+    throw new Error("Assertion failed");
+  }
+  return;
+}
+
+export function checkSignature(
+  key: key,
+  signature: signature,
+  bytes: bytes
+): bool {
+  return false;
+}
