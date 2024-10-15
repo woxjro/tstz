@@ -6,7 +6,7 @@ export type key = string;
 export type mutez = number;
 export type nat = number;
 export type signature = string;
-// export type string = string;
+export type String = string;
 
 export function getAmount(): mutez {
   const DUMMY_AMOUNT: mutez = 5000;
@@ -84,7 +84,7 @@ export class Pair<T, U> {
 export type Option<T> = T | null;
 
 // The type of value should be packable to bytes
-export function pack(value: string): bytes {
+export function pack(value: String): bytes {
   return value;
 }
 
