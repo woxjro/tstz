@@ -1,4 +1,4 @@
-# tstz
+# tstz: Compiler from TypeScript to MLIR Michelson dialect
 
 ```sh
 $ npm install
