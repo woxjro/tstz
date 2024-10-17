@@ -43,6 +43,30 @@ pub enum OperationKind {
     TransferTokens,
 }
 
+impl From<&str> for OperationKind {
+    fn from(s: &str) -> Self {
+        match s {
+            "append" => Self::Append,
+            "assert" => Self::Assert,
+            "assertSome" => Self::AssertSome,
+            "checkSignature" => Self::CheckSignature,
+            "getAmount" => Self::GetAmount,
+            "getBytes" => Self::GetBytes,
+            "getContract" => Self::GetContract,
+            "getFst" => Self::GetFst,
+            "getSnd" => Self::GetSnd,
+            "getSource" => Self::GetSource,
+            "makeList" => Self::MakeList,
+            "makePair" => Self::MakePair,
+            "pack" => Self::Pack,
+            "return" => Self::Return,
+            "sha256" => Self::Sha256,
+            "transferTokens" => Self::TransferTokens,
+            _ => panic!("Unknown operation kind: {}", s),
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Operation {
     pub kind: OperationKind,

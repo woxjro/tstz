@@ -135,245 +135,26 @@ fn process_stmt(
                     };
                     let name = callee_ident.sym.to_string();
 
-                    if name == "getAmount" {
-                        operations.push(Operation {
-                            kind: OperationKind::GetAmount,
-                            args: vec![],
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "makeList" {
-                        operations.push(Operation {
-                            kind: OperationKind::MakeList,
-                            args: vec![],
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "getSource" {
-                        operations.push(Operation {
-                            kind: OperationKind::GetSource,
-                            args: vec![],
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "getContract" {
-                        let args = args
-                            .iter()
-                            .map(|arg| {
-                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
-                                type_env
-                                    .iter()
-                                    .find(|v| v.id == format!("%{}", sym))
-                                    .unwrap()
-                                    .to_owned()
-                            })
-                            .collect::<Vec<_>>();
-                        operations.push(Operation {
-                            kind: OperationKind::GetContract,
-                            args,
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "assertSome" {
-                        let args = args
-                            .iter()
-                            .map(|arg| {
-                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
-                                type_env
-                                    .iter()
-                                    .find(|v| v.id == format!("%{}", sym))
-                                    .unwrap()
-                                    .to_owned()
-                            })
-                            .collect::<Vec<_>>();
-                        operations.push(Operation {
-                            kind: OperationKind::AssertSome,
-                            args,
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "transferTokens" {
-                        let args = args
-                            .iter()
-                            .map(|arg| {
-                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
-                                type_env
-                                    .iter()
-                                    .find(|v| v.id == format!("%{}", sym))
-                                    .unwrap()
-                                    .to_owned()
-                            })
-                            .collect::<Vec<_>>();
-                        operations.push(Operation {
-                            kind: OperationKind::TransferTokens,
-                            args,
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "append" {
-                        let args = args
-                            .iter()
-                            .map(|arg| {
-                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
-                                type_env
-                                    .iter()
-                                    .find(|v| v.id == format!("%{}", sym))
-                                    .unwrap()
-                                    .to_owned()
-                            })
-                            .collect::<Vec<_>>();
-                        operations.push(Operation {
-                            kind: OperationKind::Append,
-                            args,
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "makePair" {
-                        let args = args
-                            .iter()
-                            .map(|arg| {
-                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
-                                type_env
-                                    .iter()
-                                    .find(|v| v.id == format!("%{}", sym))
-                                    .unwrap()
-                                    .to_owned()
-                            })
-                            .collect::<Vec<_>>();
-                        operations.push(Operation {
-                            kind: OperationKind::MakePair,
-                            args,
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "getBytes" {
-                        let args = args
-                            .iter()
-                            .map(|arg| {
-                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
-                                type_env
-                                    .iter()
-                                    .find(|v| v.id == format!("%{}", sym))
-                                    .unwrap()
-                                    .to_owned()
-                            })
-                            .collect::<Vec<_>>();
-                        operations.push(Operation {
-                            kind: OperationKind::GetBytes,
-                            args,
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "sha256" {
-                        let args = args
-                            .iter()
-                            .map(|arg| {
-                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
-                                type_env
-                                    .iter()
-                                    .find(|v| v.id == format!("%{}", sym))
-                                    .unwrap()
-                                    .to_owned()
-                            })
-                            .collect::<Vec<_>>();
-                        operations.push(Operation {
-                            kind: OperationKind::Sha256,
-                            args,
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "getFst" {
-                        let args = args
-                            .iter()
-                            .map(|arg| {
-                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
-                                type_env
-                                    .iter()
-                                    .find(|v| v.id == format!("%{}", sym))
-                                    .unwrap()
-                                    .to_owned()
-                            })
-                            .collect::<Vec<_>>();
-                        operations.push(Operation {
-                            kind: OperationKind::GetFst,
-                            args,
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "getSnd" {
-                        let args = args
-                            .iter()
-                            .map(|arg| {
-                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
-                                type_env
-                                    .iter()
-                                    .find(|v| v.id == format!("%{}", sym))
-                                    .unwrap()
-                                    .to_owned()
-                            })
-                            .collect::<Vec<_>>();
-                        operations.push(Operation {
-                            kind: OperationKind::GetSnd,
-                            args,
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "checkSignature" {
-                        let args = args
-                            .iter()
-                            .map(|arg| {
-                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
-                                type_env
-                                    .iter()
-                                    .find(|v| v.id == format!("%{}", sym))
-                                    .unwrap()
-                                    .to_owned()
-                            })
-                            .collect::<Vec<_>>();
-                        operations.push(Operation {
-                            kind: OperationKind::CheckSignature,
-                            args,
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "pack" {
-                        let args = args
-                            .iter()
-                            .map(|arg| {
-                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
-                                type_env
-                                    .iter()
-                                    .find(|v| v.id == format!("%{}", sym))
-                                    .unwrap()
-                                    .to_owned()
-                            })
-                            .collect::<Vec<_>>();
-                        operations.push(Operation {
-                            kind: OperationKind::Pack,
-                            args,
-                            results: vec![value.to_owned()],
-                        });
-                        type_env.push(value.to_owned());
-                    } else if name == "assert" {
-                        let args = args
-                            .iter()
-                            .map(|arg| {
-                                let sym = arg.to_owned().expr.expect_ident().sym.to_string();
-                                type_env
-                                    .iter()
-                                    .find(|v| v.id == format!("%{}", sym))
-                                    .unwrap()
-                                    .to_owned()
-                            })
-                            .collect::<Vec<_>>();
-                        operations.push(Operation {
-                            kind: OperationKind::Assert,
-                            args,
-                            results: vec![],
-                        });
-                    } else {
-                        unreachable!("unexpected function: {:?}", name);
-                    }
+                    let kind = OperationKind::from(name.as_str());
+                    let args = args
+                        .iter()
+                        .map(|arg| {
+                            let sym = arg.to_owned().expr.expect_ident().sym.to_string();
+                            type_env
+                                .iter()
+                                .find(|v| v.id == format!("%{}", sym))
+                                .unwrap()
+                                .to_owned()
+                        })
+                        .collect::<Vec<_>>();
+
+                    let results = vec![value.to_owned()];
+                    operations.push(Operation {
+                        kind,
+                        args,
+                        results,
+                    });
+                    type_env.push(value);
                 }
             }
         }
