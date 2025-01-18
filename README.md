@@ -1,5 +1,6 @@
-# tstz: Compiler from TypeScript to MLIR Michelson dialect
+# TSTZ: Compiler from TypeScript to MLIR
 
+TSTZ is a compiler that translates TypeScript into MLIR written in the Michelson Dialect.
 ```sh
 $ npm install
 $ npx ts-node ./examples/typescript/boomerang.ts
